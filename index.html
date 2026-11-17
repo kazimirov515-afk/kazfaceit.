@@ -1,0 +1,784 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KAZFACE PRO 4.0</title>
+<style>
+:root{
+--bg:#070a12;--panel:#111c2d;--line:#293b55;
+--orange:#ff9e38;--gold:#ffdc80;--green:#4ce0a0;
+--red:#ff6078;--muted:#91a4bd;
+}
+*{box-sizing:border-box}
+body{
+margin:0;background:var(--bg);color:#f5f7fc;
+font:15px Arial,sans-serif;min-height:100vh;
+}
+body:before{
+content:"";position:fixed;inset:-30%;z-index:-1;
+background:radial-gradient(ellipse at 15% 10%,#244c7766,transparent 35%),
+radial-gradient(ellipse at 85% 80%,#a64b1c33,transparent 35%);
+animation:bgmove 15s infinite alternate;
+}
+@keyframes bgmove{to{transform:translate(3%,-2%) scale(1.1)}}
+@keyframes appear{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:none}}
+@keyframes glow{50%{box-shadow:0 0 30px #ff9e3855}}
+@keyframes shine{to{background-position:200% center}}
+@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.wrap{width:min(1350px,100%);margin:auto;padding:18px}
+.hidden{display:none!important}
+header,.panel,.stat,.authbox{
+background:linear-gradient(145deg,#1a2a40ee,#101725f5);
+border:1px solid var(--line);border-radius:17px;
+box-shadow:0 14px 40px #0005;
+}
+header{padding:22px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.brand{font-size:35px;font-weight:1000;color:var(--orange)}
+.brand span{color:white}
+.sub{font-size:10px;letter-spacing:3px;color:var(--muted)}
+.online{color:var(--green);font-size:11px}
+.panel{padding:19px;margin-bottom:15px;animation:appear .35s}
+.panel h2{margin-top:0}
+button,input,select{font:inherit}
+button{
+border:0;border-radius:10px;padding:12px 15px;
+font-weight:900;cursor:pointer;transition:.2s;margin:3px;
+}
+button:hover{transform:translateY(-3px);filter:brightness(1.15)}
+button:active{transform:scale(.97)}
+.primary{background:linear-gradient(135deg,#ffdf91,var(--orange));color:#17100a}
+.secondary{background:#293c56;color:white;border:1px solid #405775}
+.danger{background:#512434;color:white}
+input,select{
+width:100%;padding:13px;margin:7px 0;
+background:#091321;color:white;border:1px solid #354963;
+border-radius:10px;outline:none;
+}
+input:focus,select:focus{border-color:var(--orange)}
+nav{
+display:flex;gap:6px;flex-wrap:wrap;padding:9px;
+background:#101725;border:1px solid var(--line);
+border-radius:14px;margin-bottom:17px;position:sticky;top:5px;z-index:5;
+}
+nav button{background:transparent;color:#aab8ca;font-size:11px}
+nav button.active,nav button:hover{background:var(--orange);color:#111}
+.page{display:none}
+.page.active{display:block;animation:appear .35s}
+.hero{display:grid;grid-template-columns:1.3fr .8fr;gap:14px}
+.profile{display:flex;align-items:center;gap:16px;min-height:145px}
+.avatar{
+width:78px;height:78px;border-radius:18px;
+border:2px solid var(--orange);object-fit:cover;background:#263950;
+animation:glow 3s infinite;
+}
+.nick{font-size:25px;font-weight:1000;margin:6px 0}
+.tag{font-size:10px;letter-spacing:2px;color:var(--orange);font-weight:900}
+.muted,.tiny{color:var(--muted)}
+.tiny{font-size:11px}
+.rankbox{margin-left:auto;text-align:right}
+.rankbox strong{display:block;color:var(--gold);font-size:27px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin:15px 0}
+.stat{padding:16px;transition:.2s}
+.stat:hover{transform:translateY(-4px);border-color:var(--orange)}
+.stat small{color:var(--muted);font-size:10px;letter-spacing:1px}
+.num{font-size:29px;font-weight:1000;color:var(--orange);margin-top:9px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row{display:flex;align-items:center;gap:12px;padding:12px 3px;border-bottom:1px solid var(--line)}
+.face{width:38px;height:38px;border-radius:11px;background:#293951;display:grid;place-items:center;color:var(--orange);font-weight:1000;flex-shrink:0}
+.rowinfo{flex:1;min-width:0}
+.rowinfo b{display:block;overflow:hidden;text-overflow:ellipsis}
+.rowinfo small{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.elo{color:var(--gold);font-weight:1000;white-space:nowrap}
+.authbox{max-width:480px;margin:40px auto;padding:26px;text-align:center}
+.error{color:var(--red);font-size:12px;min-height:18px}
+.progress{height:9px;background:#293951;border-radius:9px;overflow:hidden;margin-top:12px}
+.progress div{height:100%;background:linear-gradient(90deg,var(--orange),var(--gold));transition:width .7s}
+.badge{display:inline-block;padding:7px 11px;border-radius:8px;background:#342b1c;color:var(--gold);font-size:11px;font-weight:900}
+.mission,.item,.tournament{
+padding:15px;margin:9px 0;background:#0b1422;
+border:1px solid var(--line);border-radius:12px;
+}
+.mission b,.item b{color:var(--gold)}
+.achievement{display:flex;align-items:center;gap:12px;padding:13px;border-bottom:1px solid var(--line)}
+.achievement.locked{opacity:.35;filter:grayscale(1)}
+.symbol{font-size:25px}
+table{width:100%;border-collapse:collapse;min-width:500px}
+th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line)}
+th{font-size:10px;color:var(--muted)}
+.tablewrap{overflow:auto}
+.win{color:var(--green)}.loss{color:var(--red)}
+.toast{
+position:fixed;right:20px;bottom:20px;z-index:50;
+background:#18283c;border:1px solid #52647c;
+padding:15px 19px;border-radius:12px;animation:appear .3s;
+}
+.overlay{
+position:fixed;inset:0;background:#03060be8;backdrop-filter:blur(9px);
+display:grid;place-items:center;z-index:40;padding:20px;
+}
+.resultcard{
+width:min(480px,100%);padding:35px;text-align:center;
+background:linear-gradient(145deg,#1b2c42,#101725);
+border:1px solid #52647c;border-radius:22px;animation:pop .4s;
+}
+.resultcard h1{font-size:42px}
+.resultcard.win h1{color:var(--green)}
+.resultcard.loss h1{color:var(--red)}
+.resultcard .big{font-size:42px;font-weight:1000;color:var(--gold)}
+.goldtext{color:var(--gold)}
+.frame{border:2px solid var(--orange);padding:12px;border-radius:13px}
+.frame.diamond{border-color:#5bdfff;box-shadow:0 0 18px #5bdfff44}
+.frame.legend{border-color:#ffdc80;box-shadow:0 0 20px #ffdc8055}
+.chart{width:100%;height:180px;background:#091321;border-radius:12px;border:1px solid var(--line)}
+.bar{height:9px;background:#263a53;border-radius:8px;overflow:hidden;margin:7px 0}
+.bar span{display:block;height:100%;background:var(--orange)}
+.footer{text-align:center;color:#647187;font-size:11px;padding:22px}
+@media(max-width:760px){
+.wrap{padding:10px}.hero,.split{grid-template-columns:1fr}
+.stats{grid-template-columns:repeat(2,1fr)}
+header{align-items:flex-start;flex-direction:column;gap:10px}
+.profile{flex-wrap:wrap}nav{position:static}
+}
+
+#installApp{white-space:nowrap}
+@media(max-width:520px){
+  #installApp{width:100%;margin:0}
+}
+
+</style>
+
+<meta name="theme-color" content="#070a12">
+<meta name="description" content="KAZFACE — CS2 competitive profile, ELO and match stats.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/kazface-192.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/kazface-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+</head>
+<body>
+<div class="wrap">
+<header>
+ <div>
+  <div class="brand">KAZ<span>FACE.</span></div>
+  <div class="sub">CS2 • COMPETITIVE • PRO 4.0</div>
+  <p class="tag">YOUR GAME. YOUR RATING.</p>
+ </div>
+ <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="online">● SYSTEM ONLINE</div><button id="installApp" class="primary" type="button" onclick="installKAZFACE()">📲 УСТАНОВИТЬ</button></div>
+</header>
+
+<section id="auth" class="authbox">
+ <div class="brand">KAZ<span>FACE.</span></div>
+ <p class="muted">Создай свой игровой профиль.</p>
+ <button class="primary" onclick="setMode('reg')">РЕГИСТРАЦИЯ</button>
+ <button class="secondary" onclick="setMode('login')">ВОЙТИ</button>
+ <div id="regForm">
+  <input id="regNick" maxlength="24" placeholder="Обязательный ник CS2">
+  <input id="regPass" type="password" placeholder="Пароль">
+  <button class="primary" style="width:100%" onclick="register()">СОЗДАТЬ ПРОФИЛЬ</button>
+ </div>
+ <div id="loginForm" class="hidden">
+  <input id="loginNick" placeholder="Ник CS2">
+  <input id="loginPass" type="password" placeholder="Пароль">
+  <button class="primary" style="width:100%" onclick="login()">ВОЙТИ</button>
+ </div>
+ <p id="authError" class="error"></p>
+ <p class="tiny">Демо-версия: профиль хранится в этом браузере. Не используй настоящий пароль.</p>
+</section>
+
+<main id="app" class="hidden">
+<nav>
+ <button class="active" onclick="page('home',this)">ГЛАВНАЯ</button>
+ <button onclick="page('ranking',this)">🏆 РЕЙТИНГ</button>
+ <button onclick="page('allies',this)">🤝 СОЮЗНИКИ</button>
+ <button onclick="page('matches',this)">🎮 МАТЧИ</button>
+ <button onclick="page('missions',this)">⚡ ЗАДАНИЯ</button>
+ <button onclick="page('season',this)">🏆 СЕЗОН</button>
+ <button onclick="page('tournaments',this)">🔥 ТУРНИРЫ</button>
+ <button onclick="page('store',this)">💎 МАГАЗИН</button>
+ <button onclick="page('achievements',this)">🏅 НАГРАДЫ</button>
+ <button onclick="page('settings',this)">⚙ НАСТРОЙКИ</button>
+</nav>
+
+<section id="home" class="page active">
+ <div class="hero">
+  <div class="panel profile">
+   <img id="avatar" class="avatar" alt="Аватар">
+   <div id="profileFrame">
+    <div class="tag">PLAYER PROFILE</div>
+    <h1 class="nick" id="nick">PLAYER</h1>
+    <div class="tiny">CS2 NICK: <b id="cs2nick"></b></div>
+    <div class="tiny" id="kazid"></div>
+    <p><span class="badge" id="rank">ROOKIE</span></p>
+   </div>
+   <div class="rankbox">
+    <small class="muted">GLOBAL PLACE</small>
+    <strong id="myRank">#101</strong>
+    <small class="muted">KAZFACE RANK</small>
+   </div>
+  </div>
+  <div class="panel">
+   <div class="tag">KAZFACE ELO</div>
+   <div class="num" style="font-size:45px" id="elo">100</div>
+   <p class="tiny">Победа +100 / поражение −50</p>
+   <div class="progress"><div id="progress"></div></div>
+   <p class="tiny" id="progressText"></p>
+   <p>🔥 Серия побед: <b id="streak">0</b></p>
+   <p>💎 Монеты: <b id="coins">0</b></p>
+  </div>
+ </div>
+ <div class="stats">
+  <div class="stat"><small>ПОБЕДЫ</small><div class="num" id="wins">0</div></div>
+  <div class="stat"><small>ПОРАЖЕНИЯ</small><div class="num" id="losses">0</div></div>
+  <div class="stat"><small>МАТЧИ</small><div class="num" id="matches">0</div></div>
+  <div class="stat"><small>WIN RATE</small><div class="num" id="wr">0%</div></div>
+  <div class="stat"><small>AVG HS</small><div class="num" id="avgHs">0%</div></div>
+  <div class="stat"><small>K/D</small><div class="num" id="kd">0.00</div></div>
+ </div>
+ <div class="split">
+  <div class="panel"><h2>🏆 TOP 3</h2><div id="topThree"></div></div>
+  <div class="panel"><h2>🎖️ MVP НЕДЕЛИ</h2><div id="weeklyMvp">Пока нет результатов.</div></div>
+ </div>
+ <div class="panel">
+  <h2>⚡ БЫСТРЫЕ ДЕЙСТВИЯ</h2>
+  <button class="primary" onclick="findMatch()">🎯 НАЙТИ МАТЧ</button>
+  <button class="secondary" onclick="page('matches',document.querySelectorAll('nav button')[3])">ДОБАВИТЬ РЕЗУЛЬТАТ</button>
+  <button class="secondary" onclick="copyId()">КОПИРОВАТЬ KAZ ID</button>
+ </div>
+</section>
+
+<section id="ranking" class="page">
+ <div class="panel">
+  <h2>🏆 GLOBAL TOP 100</h2>
+  <p class="tiny">Локальный демонстрационный рейтинг игроков.</p>
+  <div id="leaderboard"></div>
+ </div>
+</section>
+
+<section id="allies" class="page">
+ <div class="panel">
+  <h2>🤝 ПОИСК СОЮЗНИКОВ</h2>
+  <input id="allyNick" placeholder="Ник CS2 союзника">
+  <input id="allyElo" type="number" min="0" placeholder="ELO союзника">
+  <button class="primary" onclick="addAlly()">+ ДОБАВИТЬ СОЮЗНИКА</button>
+  <p class="tiny">В демо-версии союзники добавляются вручную.</p>
+ </div>
+ <div class="panel"><h2>МОЯ КОМАНДА</h2><div id="alliesList"></div></div>
+ <div class="panel"><h2>КОМАНДНЫЙ ELO</h2><div class="num" id="teamElo">0</div></div>
+ <div class="panel">
+  <h2>👥 МОЯ КОМАНДА KAZFACE</h2>
+  <input id="teamName" placeholder="Название команды">
+  <button class="primary" onclick="createTeam()">СОЗДАТЬ КОМАНДУ</button>
+  <p id="teamInfo" class="goldtext">Команда не создана.</p>
+ </div>
+</section>
+
+<section id="matches" class="page">
+ <div class="panel">
+  <h2>📊 ИСТОРИЯ МАТЧЕЙ</h2>
+  <div class="tablewrap">
+   <table>
+    <thead><tr><th>ДАТА</th><th>РЕЗУЛЬТАТ</th><th>K</th><th>D</th><th>A</th><th>HS</th><th>ELO</th></tr></thead>
+    <tbody id="history"></tbody>
+   </table>
+  </div>
+  <p id="noMatches" class="muted">Матчей пока нет.</p>
+ </div>
+ <div class="panel">
+  <h2>ДОБАВИТЬ РЕЗУЛЬТАТ</h2>
+  <div class="split">
+   <input id="kills" type="number" min="0" placeholder="Kills">
+   <input id="deaths" type="number" min="0" placeholder="Deaths">
+   <input id="assists" type="number" min="0" placeholder="Assists">
+   <input id="hs" type="number" min="0" max="100" placeholder="HS %">
+  </div>
+  <select id="result">
+   <option value="win">ПОБЕДА (+100 ELO)</option>
+   <option value="loss">ПОРАЖЕНИЕ (−50 ELO)</option>
+  </select>
+  <button class="primary" onclick="saveMatch()">СОХРАНИТЬ МАТЧ</button>
+ </div>
+ <div class="panel">
+  <h2>🗺️ ГОЛОСОВАНИЕ ЗА КАРТУ</h2>
+  <select id="mapVote">
+   <option>Mirage</option><option>Dust2</option><option>Inferno</option>
+   <option>Ancient</option><option>Nuke</option><option>Anubis</option>
+   <option>Overpass</option>
+  </select>
+  <button class="secondary" onclick="voteMap()">ПРОГОЛОСОВАТЬ</button>
+  <p id="mapResult" class="goldtext">Голосование ещё не началось.</p>
+ </div>
+</section>
+
+<section id="missions" class="page">
+ <div class="panel">
+  <h2>⚡ ЗАДАНИЯ KAZFACE</h2>
+  <p class="tiny">За каждое выполненное задание начисляется ровно +25 ELO.</p>
+  <div id="missionList"></div>
+ </div>
+</section>
+
+<section id="season" class="page">
+ <div class="panel">
+  <h2>🏆 KAZFACE SEASON 1</h2>
+  <span class="badge">СЕЗОН АКТИВЕН</span>
+  <p class="muted">Твой сезонный рейтинг</p>
+  <div class="num" id="seasonElo">100</div>
+  <div class="progress"><div id="seasonProgress"></div></div>
+  <p class="tiny">В конце сезона можно будет сравнить результаты и определить чемпиона.</p>
+ </div>
+ <div class="panel">
+  <h2>📈 ИСТОРИЯ ELO</h2>
+  <svg id="eloChart" class="chart" viewBox="0 0 600 180" preserveAspectRatio="none"></svg>
+  <p class="tiny">График строится по сохранённым результатам матчей и заданий.</p>
+ </div>
+ <div class="panel">
+  <h2>👑 РАМКА ПРОФИЛЯ</h2>
+  <p id="frameName" class="goldtext">Обычная рамка</p>
+  <p class="tiny">Рамки можно открыть в магазине за монеты.</p>
+ </div>
+</section>
+
+<section id="tournaments" class="page">
+ <div class="panel">
+  <h2>🔥 ТУРНИРЫ KAZFACE</h2>
+  <p class="tiny">Демонстрационные турниры. Реальные матчи с другими игроками требуют сервера.</p>
+  <div id="tournamentList"></div>
+ </div>
+ <div class="panel">
+  <h2>🏆 ТАБЛИЦА ЧЕМПИОНОВ</h2>
+  <div id="champions"></div>
+ </div>
+</section>
+
+<section id="store" class="page">
+ <div class="panel">
+  <h2>💎 KAZFACE STORE</h2>
+  <p>Твои монеты: <b class="goldtext" id="storeCoins">0</b></p>
+  <p class="tiny">Монеты выдаются за сыгранные матчи. Они не влияют на ELO.</p>
+  <div id="storeItems"></div>
+ </div>
+</section>
+
+<section id="achievements" class="page">
+ <div class="panel">
+  <h2>🏅 МОИ ДОСТИЖЕНИЯ</h2>
+  <div id="achievementList"></div>
+ </div>
+</section>
+
+<section id="settings" class="page">
+ <div class="panel">
+  <h2>⚙ НАСТРОЙКИ ПРОФИЛЯ</h2>
+  <p class="tiny">Твой ник CS2: <b id="settingsCs2"></b></p>
+  <input id="newNick" maxlength="24" placeholder="Новый ник CS2">
+  <button class="primary" onclick="changeNick()">ИЗМЕНИТЬ НИК CS2</button>
+  <p class="muted">Аватарка профиля</p>
+  <input type="file" id="avatarFile" accept="image/*">
+  <button class="secondary" onclick="changeAvatar()">УСТАНОВИТЬ АВАТАРКУ</button>
+  <hr style="border-color:var(--line);margin:20px 0">
+  <button class="secondary" onclick="resetStats()">СБРОСИТЬ СТАТИСТИКУ</button>
+  <button class="danger" onclick="logout()">ВЫЙТИ ИЗ ПРОФИЛЯ</button>
+ </div>
+</section>
+</main>
+
+<div class="footer">KAZFACE PRO 4.0 • UNOFFICIAL FAN PROJECT • NOT CONNECTED TO STEAM OR FACEIT</div>
+</div>
+
+<div id="resultOverlay" class="overlay hidden">
+ <div id="resultCard" class="resultcard">
+  <div class="tag">KAZFACE MATCH RESULT</div>
+  <h1 id="resultTitle">VICTORY</h1>
+  <p id="resultSubtitle" class="muted"></p>
+  <div class="big" id="resultElo">+100 ELO</div>
+  <p id="mvpText"></p>
+  <button class="primary" onclick="closeResult()">ПРОДОЛЖИТЬ</button>
+ </div>
+</div>
+
+<script>
+const DB="kazface_pro_4_accounts";
+const SESSION="kazface_pro_4_session";
+let accounts={};
+try{accounts=JSON.parse(localStorage.getItem(DB)||"{}")}catch(e){}
+let current=localStorage.getItem(SESSION);
+let data=current&&accounts[current]?accounts[current]:null;
+const $=id=>document.getElementById(id);
+
+function persist(){
+ if(!current||!data)return;
+ accounts[current]=data;
+ localStorage.setItem(DB,JSON.stringify(accounts));
+}
+function setMode(mode){
+ $("regForm").classList.toggle("hidden",mode!=="reg");
+ $("loginForm").classList.toggle("hidden",mode!=="login");
+ $("authError").textContent="";
+}
+function authError(t){$("authError").textContent=t}
+function makeId(){
+ return "KZ-"+Math.random().toString(36).slice(2,6).toUpperCase()+"-"+Math.random().toString(36).slice(2,6).toUpperCase();
+}
+function register(){
+ let n=$("regNick").value.trim(),p=$("regPass").value,key=n.toLowerCase();
+ if(n.length<2)return authError("Введи ник CS2 минимум из 2 символов.");
+ if(!/^[a-zA-Z0-9_\-[\]{}]+$/.test(n))return authError("Используй буквы, цифры, _ или -.");
+ if(p.length<4)return authError("Пароль минимум 4 символа.");
+ if(accounts[key])return authError("Этот ник уже зарегистрирован.");
+ current=key;
+ data={
+ nick:n,cs2nick:n,pass:p,id:makeId(),elo:100,seasonElo:100,
+ wins:0,losses:0,streak:0,bestStreak:0,
+ matches:[],allies:[],avatar:null,claimedMissions:[],
+ coins:0,frame:"basic",frames:["basic"],eloHistory:[100],
+ team:"",votes:[],joinedTournaments:[]
+ };
+ persist();localStorage.setItem(SESSION,current);start();
+}
+function login(){
+ let n=$("loginNick").value.trim(),p=$("loginPass").value,key=n.toLowerCase();
+ if(!accounts[key]||accounts[key].pass!==p)return authError("Неверный ник или пароль.");
+ current=key;data=accounts[key];
+ if(!data.eloHistory)data.eloHistory=[data.elo||100];
+ if(!data.claimedMissions)data.claimedMissions=[];
+ if(!data.frames)data.frames=["basic"];
+ if(!data.coins)data.coins=0;
+ persist();localStorage.setItem(SESSION,current);start();
+}
+function start(){
+ $("auth").classList.add("hidden");
+ $("app").classList.remove("hidden");
+ render();
+}
+function logout(){localStorage.removeItem(SESSION);location.reload()}
+function page(id,btn){
+ document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+ $(id).classList.add("active");
+ document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+ if(btn)btn.classList.add("active");
+ render();
+}
+function safe(s){
+ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function rankName(e){
+ if(e>=5000)return "👑 KAZFACE LEGEND";
+ if(e>=3500)return "💎 DIAMOND";
+ if(e>=2500)return "🔥 ELITE";
+ if(e>=1700)return "🟣 PLATINUM";
+ if(e>=1000)return "🟡 GOLD";
+ if(e>=500)return "⚪ SILVER";
+ return "🟤 ROOKIE";
+}
+const bots=[
+ ["s1mple",5000],["donk",4900],["m0NESY",4700],
+ ["ZywOo",4600],["NiKo",4400],["ropz",4300],
+ ["sh1ro",4200],["b1t",4100],["device",4000],
+ ["jL",3900],["frozen",3800],["broky",3700],
+ ["Twistzz",3600],["rain",3500],["w0nderful",3400]
+];
+function globalList(){
+ let list=bots.map(x=>({nick:x[0],elo:x[1],bot:true}));
+ for(let i=list.length;i<100;i++)list.push({
+ nick:"KZ_PLAYER_"+(i+1),elo:Math.max(100,3300-i*30),bot:true
+ });
+ list.push({nick:data.cs2nick,elo:data.elo,bot:false});
+ return list.sort((a,b)=>b.elo-a.elo);
+}
+function playerRow(p,i){
+ return `<div class="row">
+ <div class="face">#${i+1}</div>
+ <div class="rowinfo"><b>${safe(p.nick)} ${p.bot===false?"(ТЫ)":""}</b>
+ <small>${p.bot?"DEMO PLAYER":"KAZFACE PLAYER"}</small></div>
+ <div class="elo">${p.elo} ELO</div></div>`;
+}
+function render(){
+ let m=data.matches||[],wins=data.wins||0,losses=data.losses||0;
+ let k=m.reduce((s,x)=>s+x.k,0),d=m.reduce((s,x)=>s+x.d,0);
+ $("nick").textContent=data.cs2nick;
+ $("cs2nick").textContent=data.cs2nick;
+ $("settingsCs2").textContent=data.cs2nick;
+ $("kazid").textContent="KAZ ID: "+data.id;
+ $("elo").textContent=data.elo;
+ $("coins").textContent=data.coins||0;
+ $("storeCoins").textContent=data.coins||0;
+ $("wins").textContent=wins;$("losses").textContent=losses;
+ $("matches").textContent=m.length;
+ $("wr").textContent=m.length?Math.round(wins/m.length*100)+"%":"0%";
+ $("avgHs").textContent=m.length?Math.round(m.reduce((s,x)=>s+x.hs,0)/m.length)+"%":"0%";
+ $("kd").textContent=(k/Math.max(1,d)).toFixed(2);
+ $("rank").textContent=rankName(data.elo);
+ $("streak").textContent=data.streak;
+ let next=(Math.floor(data.elo/500)+1)*500;
+ $("progress").style.width=(data.elo%500)/5+"%";
+ $("progressText").textContent=(next-data.elo)+" ELO до следующего уровня";
+ let list=globalList();
+ $("myRank").textContent="#"+(list.findIndex(x=>!x.bot)+1);
+ $("topThree").innerHTML=list.slice(0,3).map(playerRow).join("");
+ $("leaderboard").innerHTML=list.map(playerRow).join("");
+ $("history").innerHTML=m.map(x=>`<tr>
+ <td>${safe(x.date)}</td>
+ <td class="${x.result==="win"?"win":"loss"}">${x.result==="win"?"ПОБЕДА":"ПОРАЖЕНИЕ"}</td>
+ <td>${x.k}</td><td>${x.d}</td><td>${x.a}</td><td>${x.hs}%</td>
+ <td class="${x.delta>0?"win":"loss"}">${x.delta>0?"+":""}${x.delta}</td>
+ </tr>`).join("");
+ $("noMatches").classList.toggle("hidden",m.length>0);
+ if(data.avatar)$("avatar").src=data.avatar;
+ else $("avatar").removeAttribute("src");
+ renderAllies();renderMissions();renderAchievements();
+ renderChart();renderTournaments();renderStore();renderMvp();
+ $("seasonElo").textContent=data.seasonElo??data.elo;
+ $("seasonProgress").style.width=((data.seasonElo??data.elo)%500)/5+"%";
+ let frames={basic:"Обычная рамка",diamond:"💎 Алмазная рамка",legend:"👑 Легендарная рамка"};
+ $("frameName").textContent=frames[data.frame]||frames.basic;
+ $("profileFrame").className="frame "+(data.frame==="diamond"?"diamond":data.frame==="legend"?"legend":"");
+ $("teamInfo").textContent=data.team||"Команда не создана.";
+}
+function renderAllies(){
+ let a=data.allies||[];
+ $("alliesList").innerHTML=a.length?a.map((x,i)=>`
+ <div class="row"><div class="face">${safe(x.nick[0].toUpperCase())}</div>
+ <div class="rowinfo"><b>${safe(x.nick)}</b><small>ALLY • ${x.elo} ELO</small></div>
+ <div class="elo">${x.elo}</div>
+ <button class="secondary" onclick="removeAlly(${i})">УДАЛИТЬ</button></div>`).join(""):"Союзников пока нет.";
+ $("teamElo").textContent=data.elo+a.reduce((s,x)=>s+x.elo,0);
+}
+function addAlly(){
+ let n=$("allyNick").value.trim(),e=Number($("allyElo").value);
+ if(n.length<2||!Number.isFinite(e)||e<0)return toast("Введи ник и ELO.");
+ if(n.toLowerCase()===data.cs2nick.toLowerCase())return toast("Нельзя добавить себя.");
+ if(data.allies.some(x=>x.nick.toLowerCase()===n.toLowerCase()))return toast("Уже добавлен.");
+ data.allies.push({nick:n,elo:e});persist();render();toast("Союзник добавлен!");
+}
+function removeAlly(i){data.allies.splice(i,1);persist();render()}
+function createTeam(){
+ let n=$("teamName").value.trim();
+ if(n.length<2)return toast("Введи название команды.");
+ data.team=n;persist();render();toast("Команда создана!");
+}
+function saveMatch(){
+ let k=Number($("kills").value),d=Number($("deaths").value);
+ let a=Number($("assists").value),h=Number($("hs").value),r=$("result").value;
+ if(![k,d,a,h].every(Number.isInteger)||k<0||d<0||a<0||h<0||h>100)
+ return toast("Проверь статистику и HS от 0 до 100.");
+ let delta=r==="win"?100:-50;
+ data.matches.unshift({k,d,a,hs:h,result:r,date:new Date().toLocaleDateString(),delta,time:Date.now()});
+ if(r==="win"){data.wins++;data.streak++;data.bestStreak=Math.max(data.bestStreak,data.streak);}
+ else{data.losses++;data.streak=0;}
+ data.elo=Math.max(0,data.elo+delta);
+ data.seasonElo=(data.seasonElo??100)+delta;
+ data.coins=(data.coins||0)+10;
+ data.eloHistory.push(data.elo);
+ persist();render();
+ showResult(r==="win",delta,k>=25?"MVP! Отличная игра.":k>=15?"Хорошая статистика!":"Матч записан.");
+ ["kills","deaths","assists","hs"].forEach(id=>$(id).value="");
+}
+function showResult(win,delta,mvp){
+ $("resultCard").className="resultcard "+(win?"win":"loss");
+ $("resultTitle").textContent=win?"VICTORY":"DEFEAT";
+ $("resultSubtitle").textContent=win?"Ты забираешь победу!":"Следующий матч — новый шанс.";
+ $("resultElo").textContent=(delta>0?"+":"")+delta+" ELO";
+ $("mvpText").textContent=mvp;
+ $("resultOverlay").classList.remove("hidden");
+}
+function closeResult(){$("resultOverlay").classList.add("hidden")}
+function findMatch(){
+ let range=200;
+ let opponents=globalList().filter(p=>p.bot&&Math.abs(p.elo-data.elo)<=range);
+ let rival=opponents.length?opponents[Math.floor(Math.random()*opponents.length)]:{nick:"KZ_MATCH_PLAYER",elo:data.elo};
+ toast("Демо-поиск: соперник "+rival.nick+" • "+rival.elo+" ELO");
+ page("matches",document.querySelectorAll("nav button")[3]);
+}
+const tasks=[
+ {name:"Сыграй один матч",check:()=>data.matches.length>=1},
+ {name:"Забери первую победу",check:()=>data.wins>=1},
+ {name:"Сделай 15 убийств за матч",check:()=>data.matches.some(x=>x.k>=15)},
+ {name:"Сыграй 3 матча",check:()=>data.matches.length>=3},
+ {name:"Сделай 25 убийств за матч",check:()=>data.matches.some(x=>x.k>=25)},
+ {name:"Выиграй 3 матча",check:()=>data.wins>=3}
+];
+function renderMissions(){
+ let day=new Date().toDateString();
+ if(data.missionDay!==day){data.missionDay=day;data.claimedMissions=[];persist();}
+ $("missionList").innerHTML=tasks.map((t,i)=>`
+ <div class="mission"><b>${t.name}</b>
+ <p class="tiny">Награда: +25 ELO</p>
+ ${data.claimedMissions.includes(i)?
+ "<span class='win'>НАГРАДА ПОЛУЧЕНА ✓</span>":
+ t.check()?`<button class="primary" onclick="claimMission(${i})">ЗАБРАТЬ +25 ELO</button>`:
+ "<span class='muted'>ЕЩЁ НЕ ВЫПОЛНЕНО</span>"}
+ </div>`).join("");
+}
+function claimMission(i){
+ if(data.claimedMissions.includes(i)||!tasks[i].check())return;
+ data.claimedMissions.push(i);
+ data.elo+=25;data.seasonElo=(data.seasonElo??100)+25;
+ data.eloHistory.push(data.elo);
+ persist();render();toast("Задание выполнено! +25 ELO");
+}
+function renderAchievements(){
+ let total=data.matches.length;
+ let list=[
+ ["🎮","Первый матч","Сыграй первый матч",total>=1],
+ ["🏆","Первая победа","Выиграй первый матч",data.wins>=1],
+ ["🔥","На серии","Выиграй 3 матча подряд",data.bestStreak>=3],
+ ["💥","Боец","Сыграй 10 матчей",total>=10],
+ ["👑","Легенда","Набери 5000 ELO",data.elo>=5000],
+ ["🤝","Командный игрок","Добавь союзника",data.allies.length>=1],
+ ["💎","Коллекционер","Открой рамку",data.frames.length>1]
+ ];
+ $("achievementList").innerHTML=list.map(x=>`
+ <div class="achievement ${x[3]?"":"locked"}">
+ <div class="symbol">${x[0]}</div><div><b>${x[1]}</b><div class="tiny">${x[2]}</div></div>
+ <div class="elo">${x[3]?"ОТКРЫТО ✓":"ЗАКРЫТО"}</div></div>`).join("");
+}
+function renderChart(){
+ let values=data.eloHistory||[data.elo];
+ if(values.length<2)values=[values[0],values[0]];
+ let min=Math.min(...values),max=Math.max(...values);
+ let points=values.map((v,i)=>{
+ let x=20+i*(560/Math.max(1,values.length-1));
+ let y=155-((v-min)/Math.max(1,max-min))*125;
+ return x+","+y;
+ }).join(" ");
+ $("eloChart").innerHTML=`
+ <polyline points="${points}" fill="none" stroke="#ff9e38" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+ <text x="15" y="18" fill="#ffdc80" font-size="12">${max} ELO</text>
+ <text x="15" y="170" fill="#91a4bd" font-size="12">${min} ELO</text>`;
+}
+function renderMvp(){
+ let week=Date.now()-7*24*60*60*1000;
+ let recent=data.matches.filter(x=>x.time>=week);
+ let best=recent.sort((a,b)=>b.k-a.k)[0];
+ $("weeklyMvp").textContent=best?"Твой лучший матч: "+best.k+" убийств.":"Сыграй матч, чтобы попасть в список MVP.";
+}
+const tournaments=[
+ {name:"KAZFACE OPEN",prize:"Профильная медаль",players:16},
+ {name:"NIGHT CUP",prize:"Звание чемпиона",players:8},
+ {name:"PRO LEAGUE",prize:"Особая рамка",players:32}
+];
+function renderTournaments(){
+ $("tournamentList").innerHTML=tournaments.map((t,i)=>`
+ <div class="tournament"><h3>🔥 ${t.name}</h3>
+ <p class="tiny">Участников: ${t.players} • Награда: ${t.prize}</p>
+ ${data.joinedTournaments.includes(i)?"<span class='win'>ТЫ УЖЕ ЗАПИСАН ✓</span>":
+ `<button class="primary" onclick="joinTournament(${i})">УЧАСТВОВАТЬ</button>`}
+ </div>`).join("");
+ $("champions").innerHTML=`<div class="row"><div class="face">👑</div><div class="rowinfo"><b>${safe(data.cs2nick)}</b><small>ТВОЙ ПРОФИЛЬ</small></div><div class="elo">${data.elo} ELO</div></div>`;
+}
+function joinTournament(i){
+ if(data.joinedTournaments.includes(i))return;
+ data.joinedTournaments.push(i);persist();render();toast("Ты записан в демо-турнир!");
+}
+const shop=[
+ {id:"diamond",name:"💎 Алмазная рамка",price:100},
+ {id:"legend",name:"👑 Легендарная рамка",price:250}
+];
+function renderStore(){
+ $("storeItems").innerHTML=shop.map(x=>`
+ <div class="item"><b>${x.name}</b><p class="tiny">Цена: ${x.price} монет</p>
+ ${data.frames.includes(x.id)?
+ `<button class="secondary" onclick="equipFrame('${x.id}')">НАДЕТЬ</button>`:
+ `<button class="primary" onclick="buyFrame('${x.id}')">КУПИТЬ</button>`}
+ </div>`).join("");
+}
+function buyFrame(id){
+ let x=shop.find(s=>s.id===id);
+ if(!x||data.frames.includes(id))return;
+ if(data.coins<x.price)return toast("Не хватает монет!");
+ data.coins-=x.price;data.frames.push(id);data.frame=id;
+ persist();render();toast("Рамка куплена!");
+}
+function equipFrame(id){
+ if(!data.frames.includes(id))return;
+ data.frame=id;persist();render();toast("Рамка установлена!");
+}
+function voteMap(){
+ let m=$("mapVote").value;
+ data.mapVote=m;persist();
+ $("mapResult").textContent="Твой голос: "+m;
+ toast("Голос за "+m+" принят!");
+}
+function changeNick(){
+ let n=$("newNick").value.trim(),key=n.toLowerCase();
+ if(n.length<2)return toast("Введи ник минимум из 2 символов.");
+ if(!/^[a-zA-Z0-9_\-[\]{}]+$/.test(n))return toast("Недопустимые символы.");
+ if(accounts[key]&&key!==current)return toast("Такой ник уже занят.");
+ delete accounts[current];data.cs2nick=n;data.nick=n;current=key;
+ persist();localStorage.setItem(SESSION,current);render();toast("Ник изменён!");
+}
+function changeAvatar(){
+ let f=$("avatarFile").files[0];
+ if(!f||!f.type.startsWith("image/"))return toast("Выбери изображение.");
+ if(f.size>1200000)return toast("Изображение больше 1.2 МБ.");
+ let r=new FileReader();
+ r.onload=()=>{data.avatar=r.result;persist();render();toast("Аватар обновлён!");};
+ r.readAsDataURL(f);
+}
+function resetStats(){
+ if(!confirm("Сбросить матчи, ELO и достижения?"))return;
+ data.elo=100;data.seasonElo=100;data.wins=0;data.losses=0;
+ data.streak=0;data.bestStreak=0;data.matches=[];
+ data.claimedMissions=[];data.eloHistory=[100];
+ persist();render();toast("Статистика сброшена.");
+}
+function copyId(){
+ if(navigator.clipboard&&navigator.clipboard.writeText)
+ navigator.clipboard.writeText(data.id).then(()=>toast("KAZ ID скопирован!")).catch(()=>toast(data.id));
+ else toast("Твой KAZ ID: "+data.id);
+}
+function toast(msg){
+ let t=document.createElement("div");t.className="toast";t.textContent=msg;
+ document.body.appendChild(t);setTimeout(()=>t.remove(),3000);
+}
+if(data)start();
+
+// KAZFACE PWA: установка и офлайн-кэширование оболочки приложения.
+let kazfaceInstallPrompt = null;
+
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  kazfaceInstallPrompt = event;
+  const button = document.getElementById("installApp");
+  if (button) button.classList.remove("hidden");
+});
+
+window.addEventListener("appinstalled", () => {
+  kazfaceInstallPrompt = null;
+  const button = document.getElementById("installApp");
+  if (button) button.textContent = "✓ ПРИЛОЖЕНИЕ УСТАНОВЛЕНО";
+});
+
+async function installKAZFACE() {
+  if (window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone) {
+    toast("KAZFACE уже запущен как приложение.");
+    return;
+  }
+  if (kazfaceInstallPrompt) {
+    kazfaceInstallPrompt.prompt();
+    const choice = await kazfaceInstallPrompt.userChoice;
+    kazfaceInstallPrompt = null;
+    if (choice && choice.outcome === "accepted") toast("Установка KAZFACE началась!");
+    return;
+  }
+  if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+    alert("Чтобы установить KAZFACE на iPhone:\\n1. Открой сайт в Safari.\\n2. Нажми «Поделиться».\\n3. Выбери «На экран Домой».\\n4. Нажми «Добавить».");
+  } else {
+    alert("Если кнопка установки браузера не появилась, открой меню браузера (⋮) и выбери «Установить приложение» или «Добавить на главный экран». Для установки сайт должен быть открыт по HTTPS.");
+  }
+}
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch((error) => {
+      console.warn("KAZFACE offline mode registration failed:", error);
+    });
+  });
+}
+
+</script>
+</body>
+</html>

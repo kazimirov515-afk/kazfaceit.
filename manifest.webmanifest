@@ -1,0 +1,27 @@
+{
+  "id": "./",
+  "name": "KAZFACE — CS2 Competitive",
+  "short_name": "KAZFACE",
+  "description": "KAZFACE CS2 competitive profile, ELO, matches and stats.",
+  "lang": "ru",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#070a12",
+  "theme_color": "#070a12",
+  "icons": [
+    {
+      "src": "icons/kazface-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/kazface-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
